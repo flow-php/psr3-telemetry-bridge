@@ -14,7 +14,7 @@ use function is_object;
 use function is_scalar;
 use function method_exists;
 
-final readonly class ValueNormalizer
+final readonly class AttributeValueNormalizer
 {
     /**
      * @return array<array-key, mixed>|bool|\DateTimeInterface|float|int|string|\Throwable

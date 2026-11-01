@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace Flow\Bridge\Psr3\Telemetry\Tests\Unit;
 
 use DateTimeImmutable;
-use Flow\Bridge\Psr3\Telemetry\ValueNormalizer;
+use Flow\Bridge\Psr3\Telemetry\AttributeValueNormalizer;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use stdClass;
 use Stringable;
 
-final class ValueNormalizerTest extends TestCase
+final class AttributeValueNormalizerTest extends TestCase
 {
     public function test_normalizes_arrays_recursively(): void
     {
-        $normalizer = new ValueNormalizer();
+        $normalizer = new AttributeValueNormalizer();
 
         static::assertSame(
             ['a' => 1, 'b' => ['c' => 'two']],
@@ -25,7 +25,7 @@ final class ValueNormalizerTest extends TestCase
 
     public function test_normalizes_datetime_passthrough(): void
     {
-        $normalizer = new ValueNormalizer();
+        $normalizer = new AttributeValueNormalizer();
         $datetime = new DateTimeImmutable('2024-01-15 10:30:00');
 
         static::assertSame($datetime, $normalizer->normalize($datetime));
@@ -33,7 +33,7 @@ final class ValueNormalizerTest extends TestCase
 
     public function test_normalizes_null_to_string(): void
     {
-        static::assertSame('null', (new ValueNormalizer())->normalize(null));
+        static::assertSame('null', (new AttributeValueNormalizer())->normalize(null));
     }
 
     public function test_normalizes_object_with_to_string_to_string(): void
@@ -45,12 +45,12 @@ final class ValueNormalizerTest extends TestCase
             }
         };
 
-        static::assertSame('rendered', (new ValueNormalizer())->normalize($object));
+        static::assertSame('rendered', (new AttributeValueNormalizer())->normalize($object));
     }
 
     public function test_normalizes_object_without_to_string_to_class_name(): void
     {
-        static::assertSame(stdClass::class, (new ValueNormalizer())->normalize(new stdClass()));
+        static::assertSame(stdClass::class, (new AttributeValueNormalizer())->normalize(new stdClass()));
     }
 
     public function test_normalizes_resource_to_debug_type(): void
@@ -59,7 +59,7 @@ final class ValueNormalizerTest extends TestCase
         static::assertNotFalse($resource);
 
         try {
-            static::assertSame('resource (stream)', (new ValueNormalizer())->normalize($resource));
+            static::assertSame('resource (stream)', (new AttributeValueNormalizer())->normalize($resource));
         } finally {
             fclose($resource);
         }
@@ -67,7 +67,7 @@ final class ValueNormalizerTest extends TestCase
 
     public function test_normalizes_scalar_passthrough(): void
     {
-        $normalizer = new ValueNormalizer();
+        $normalizer = new AttributeValueNormalizer();
 
         static::assertSame('text', $normalizer->normalize('text'));
         static::assertSame(42, $normalizer->normalize(42));
@@ -79,6 +79,6 @@ final class ValueNormalizerTest extends TestCase
     {
         $exception = new RuntimeException('boom');
 
-        static::assertSame($exception, (new ValueNormalizer())->normalize($exception));
+        static::assertSame($exception, (new AttributeValueNormalizer())->normalize($exception));
     }
 }
